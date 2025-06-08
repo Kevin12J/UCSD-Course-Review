@@ -1,4 +1,4 @@
-name: Compile Changed LaTeX Files
+name: Compile and Commit LaTeX PDFs
 
 on:
   push:
@@ -9,12 +9,14 @@ on:
       - '**.tex'
 
 jobs:
-  compile-changed-tex:
+  compile-tex:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install TeX Live
       run: |
@@ -22,18 +24,38 @@ jobs:
         sudo apt-get install -y texlive-full
 
     - name: Compile changed .tex files
+      id: compile
       run: |
-        # Get list of changed .tex files in this commit or PR
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
         tex_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tex$' || true)
-        
         if [ -z "$tex_files" ]; then
           echo "No .tex files changed."
           exit 0
         fi
 
+        updated_pdfs=0
+
         for file in $tex_files; do
           dir=$(dirname "$file")
+          base=$(basename "$file" .tex)
+
           echo "Compiling $file"
           latexmk -pdf -output-directory="$dir" "$file"
-          latexmk -c -output-directory="$dir" # optional: clean aux files
+
+          if [ -f "$dir/$base.pdf" ]; then
+            git add "$dir/$base.pdf"
+            updated_pdfs=1
+          fi
+
+          latexmk -c -output-directory="$dir" # optional cleanup
         done
+
+        if [ "$updated_pdfs" -eq 1 ]; then
+          git commit -m "Auto-compiled PDF(s) from changed .tex"
+          git push
+        else
+          echo "No PDFs generated to commit."
+        fi
+
