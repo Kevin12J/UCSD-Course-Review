@@ -625,4 +625,22 @@ $R^2=\frac{\sum_{i=1}^n(y_i-\overline{y})^2-\sum_{i=1}^n(y_i-\hat{y})^2}{\sum_{i
 \end{itemize}
 \section{Anova Test}
 \label{sec:anova}
+Suppose we get $k$ independent random samples of sizes $n_1,n_2,\dots,n_k$\\
+Let $Y_{ij}$ be the $ith$ observation recorded for the $jth$ level
+\subsubsection{Distributional Assumptions}
+\begin{itemize}
+    \item Let $\mu_j$ be the true average for $Y$ in level $j$
+    \item Model: $Y_{ij}\sim\mathcal{N}(\mu_j,\sigma^2)$, $Y_{ij}$ are independent within and across level
+    \item Alternative: $Y_{ij}=\mu_j+\epsilon_{ij}$, $\epsilon_{ij}\sim\mathcal{N}(0,\sigma^2)$ independent within and across level
+    \item $H_0: \mu_1=\mu_2=\dots=\mu_k$
+    \item $H_1:$ At lest one $\mu_i$ is different
+\end{itemize}
+\subsection{3 Sum of Squares}
+$\mu_j$ can be estimated by $\overline{Y}_{.j}$ and $\mu=\frac{1}{n}\sum_{j=1}^kn_j\mu_j$ can be estimated by $\overline{Y}_{..}$. Under $H_0$, $\mu_j=\mu$ for each $j$.
+\subsubsection{Treatment Sum of Squares}
+$SSTR=\sum_{j=1}^k\sum_{i=1}^{n_j}(\overline{Y}_{.j}-\overline{Y}_{..})^2=\sum_{j=1}^kn_j(\overline{Y}_{.j}-\overline{Y}_{..})^2$\\
+$SSTR$ measures how far each estimated group mean is from the estimated overall mean, weighting the squared differences by how many elements are in each group. It can be seen as a measure of variation in group means. Under the null it is supppossed to be small.
+\subsubsection{Total Sum of Squares}
+$SSTOT=\sum_{j=1}^k\sum_{i-1}^{n_j}(Y_{ij}-\overline{Y}_{..})^2$\\
+$SSTOT$
 \end{document}
