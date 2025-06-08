@@ -1,0 +1,39 @@
+name: Compile Changed LaTeX Files
+
+on:
+  push:
+    paths:
+      - '**.tex'
+  pull_request:
+    paths:
+      - '**.tex'
+
+jobs:
+  compile-changed-tex:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install TeX Live
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-full
+
+    - name: Compile changed .tex files
+      run: |
+        # Get list of changed .tex files in this commit or PR
+        tex_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tex$' || true)
+        
+        if [ -z "$tex_files" ]; then
+          echo "No .tex files changed."
+          exit 0
+        fi
+
+        for file in $tex_files; do
+          dir=$(dirname "$file")
+          echo "Compiling $file"
+          latexmk -pdf -output-directory="$dir" "$file"
+          latexmk -c -output-directory="$dir" # optional: clean aux files
+        done
