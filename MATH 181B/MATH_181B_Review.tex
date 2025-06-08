@@ -1,0 +1,628 @@
+\documentclass{article}
+\usepackage{mathrsfs}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage[a4paper, margin=0.5in]{geometry}
+\title{MATH 181B Review}
+\author{Kevin Jacob}
+\date{Spring 2025}
+
+
+\begin{document}
+
+\maketitle
+\newpage
+\section*{Table Of Contents}
+\begin{enumerate}
+    \item \hyperref[sec:pair]{Paired Hypothesis Test and Confidence Interval}
+    \item \hyperref[sec:twoP]{Two Population Means Hypothesis test and Confidence Interval}
+    \begin{itemize}
+        \item \hyperref[sec:equalVZ]{Two-Sample Z-Interval/Test}
+        \item \hyperref[sec:equalVT]{Two-Samples T-Interval/Test (Equal Variances)}
+        \item \hyperref[sec:notEqualV]{Welch's Approximation (Non Equal Variances)}
+    \end{itemize}
+    \item \hyperref[sec:wilk]{Wilk's Theorem}
+    \item \hyperref[sec:twoPVar]{Two Population Variances Inference}
+    \item \hyperref[sec:twoPProp]{Two Population Proportion Hypothesis Test and Confidence Interval}
+    \item \hyperref[sec:multinom]{Multinomial Distribution}
+    \item \hyperref[sec:goodness]{Goodness of Fit Test}
+    \begin{itemize}
+        \item \hyperref[sec:goodKnown]{Known Parameters}
+        \item \hyperref[sec:goodUnknown]{Unknown Parameters}
+    \end{itemize}
+    \item \hyperref[sec:independence]{Test For Independence}
+    \item \hyperref[sec:linear]{Linear Regression}
+    \item \hyperref[sec:anova]{Anova Test}
+    \item \hyperref[sec:rbd]{Randomized Block Design}
+    \item \hyperref[sec:sign]{Sign Test}
+    \item \hyperref[sec:wilcoxon]{Wilcoxon Test}
+    \item \hyperref[sec:multiLinear]{Multiple Linear Regression}
+\end{enumerate}
+\newpage
+\section{Paired Hypothesis Test and Confidence Interval}
+\label{sec:pair}
+\subsection{Paired Data}
+\begin{center}
+    $X_i=\mu_X+P_i+\epsilon_i$\hspace*{0.5in}$Y_i=\mu_Y+P_i+\epsilon'_i$\\
+    $e_i\sim\mathcal{N}(0,\sigma_x^{'2})$\hspace*{0.5in}$e_i'\sim\mathcal{N}(0,\sigma_Y^{'2})$\hspace*{0.5in}$\epsilon_i,\epsilon'_i$ are independent
+\end{center}
+$D_i=X_i-Y_i=\mu_X-\mu_Y+\epsilon_i-\epsilon'_i$\\
+$\mathbb{E}[D_i]=\mu_X-\mu_Y$\\
+$Var(D_i)=Var(\epsilon_i-\epsilon_i')=Var(\epsilon_i)+Var(\epsilon_i')=\sigma_X^{'2}+\sigma_Y^{'2}$\\
+$D_i$ is normal\\
+\begin{tabular}{c|c|c|c}
+     & \textbf{Sample 1} & \textbf{Sample 2} & \textbf{Diffs} \\
+     \hline
+    \textbf{Mean} & $\overline{x}$ & $\overline{y}$ & $\overline{d}=\overline{x}-\overline{y}$\\
+    \hline
+    \textbf{Sd} & $S_x$ & $S_y$ & $S_d$\\
+    \hline
+    \textbf{N} & n & n & n
+\end{tabular}\\
+\textit{Note: we can't find $S_d$ from $S_x$ and $S_y$ since $X$ and $Y$ are not independent}
+\subsection{Paired t-interval/test}
+\textbf{Confidence Interval}\\
+ $[\overline{d}+t_{n-1,\frac{\alpha}{2}}\frac{S_D}{\sqrt{n}},\overline{d}-t_{n-1,\frac{\alpha}{2}}\frac{S_D}{\sqrt{n}}]$\\
+ \textbf{Hypothesis Test}\\
+ Test Statistic: $T=\frac{\overline{D}-\mu_0}{\frac{S_D}{\sqrt{n}}}$\\
+ Sampling distribution under $H_0$: $T\sim t_{n-1}$\\
+ P-Value: $P(t_{n-1}\leq t)$ or $P(t_{n-1}\geq t)$ or $2P(t_{n-1}\leq\vert t\vert)$
+ \subsection{Example}
+ You are curious to determine if books that were also movies get similar average scores or not. You collect information about 63 random different stories that were in both formats and this is a summary of the
+results:
+\begin{center}
+    \begin{tabular}{c|c|c|c}
+         & \textbf{Books} & \textbf{Movie} & \textbf{Diffs} \\
+         \hline
+        \textbf{Mean} & 7.6 & 7.8 & -0.2\\
+        \hline
+        \textbf{Sd} & 1.3 & 1.2 & 0.9\\
+        \hline
+        \textbf{N} & 63 & 63 & 63
+    \end{tabular}
+\end{center}
+Let $U_d$ be the average difference between book and movie scores for all stories in both formats\\
+$H_0$: $\mu_D=0$\hspace*{0.5in}$H_1$:$\mu_D\neq 0$\\
+Assumptions:
+\begin{itemize}
+    \item Independence: stories were selected at random
+    \item $n=63$ pretty big so by CLT is probably fine even if $D$ is not normal
+\end{itemize}
+$T=\frac{\overline{d}}{\frac{S_d}{\sqrt{n}}}=\frac{-0.2}{\frac{0.9}{\sqrt{63}}}\approx-1.764$\\
+$\text{P-Value}=2P(t_{62}\leq-1.764)=0.083$\\
+Since $\text{P-Value}>\alpha=0.05$ we fail to reject $H_0$. We don't have enough evidence against the idea that movies and books of stories with both get similar ratings.\\
+\newline
+Two construct a $90\%$ confidence interval for the average difference between book and movie scores for all stories in both formats we do the following\\
+$[\overline{d}\pm t_{0.05,62}\frac{S_d}{\sqrt{n}}]$\\
+$[-0.389,-0.011]$\\
+Since $0\notin CI$ we reject $H_0$
+\newpage
+\section{Two Population Means Hypothesis Test and Confidence Interval}
+\label{sec:twoP}
+\subsection{Two-Sample Z-Interval/Test}
+\label{sec:equalVZ}
+\begin{center}
+    $X_1,\dots,X_n\sim_{iid}\mathcal{N}(\mu_X,\sigma_X^2)$\hspace*{0.5in}$Y_1,\dots,Y_m\sim_{iid}\mathcal{N}(\mu_Y,\sigma_Y^2)$\\
+    $\overline{X}-\overline{Y}\sim\mathcal{N}(\mu_X-\mu_Y,\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m})$
+\end{center}
+\textbf{Confidence Interval}\\
+$[\overline{x}-\overline{y}\pm z_\frac{\alpha}{2}\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}]$\\
+\textbf{Hypothesis Test}\\
+Test Statistic: $z=\frac{\overline{X}-\overline{Y}-c}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}$\\
+Sampling Distribution Under $H_0$: $Z\sim\mathcal{N}(0,1)$\\
+P-Value: $P(Z\leq z)$ or $P(Z\geq z)$ or $2P(Z\leq-\vert z\vert)$
+\subsection{Two-Sample T-Interval/Test (Equal Variances)}
+\label{sec:equalVT}
+$\sigma_X^2=\sigma_Y^2=\sigma^2$
+Estimate $\sigma^2$ by pooled variance\\
+$S_p^2=\frac{(n-1)S_X^2+(m-1)S_Y^2}{n+m-2}=\frac{\sum_{i=1}^n(X_i-\overline{X})^2+\sum_{i=1}^m(Y_i-\overline{Y})^2}{n+m-2}$\\
+\textbf{Confidence Interval}\\
+$[\overline{x}-\overline{y}\pm t_{n+m-2,\frac{\alpha}{2}}S_p\sqrt{\frac{1}{n}+\frac{1}{m}}]$\\
+\textbf{Hypothesis Test}\\
+Test Statistic: $T=\frac{\overline{X}-\overline{Y}-c}{S_p\sqrt{\frac{1}{n}+\frac{1}{m}}}$\\
+Sampling Distribution Under $H_0$: $T\sim t_{n+m-2}$\\
+P-Value: $P(t_{n+m-2}\leq t)$ or $P(t_{n+m-2}\geq t)$ or $2P(t_{n+m-2}\leq-\vert t\vert)$
+\subsubsection{Proof}
+$\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sigma\sqrt{\frac{1}{n}+\frac{1}{m}}}\sim\mathcal{N}(0,1)$\hspace*{0.5in}$\frac{(n-1)S_X^2}{\sigma^2}\sim\mathcal{X}^2_{n-1}$\hspace*{0.5in}$\frac{(m-1)S_Y^2}{\sigma^2}\sim\mathcal{X}^2_{m-1}$\\
+$\overline{X}$ is independent of $S_X^2$ and $\overline{Y}$ is independent of $S_Y^2$. Because $X_1,\dots,X_n$ is independent of $Y_1,\dots,Y_m$, $\overline{X}$ is independent of $S_Y^2$ and $\overline{Y}$ is independent of $S_X^2$.
+\begin{center}
+    $T=\frac{\overline{x}-\overline{y}-(\mu_x-\mu_y)}{\sqrt{\frac{(n-1)S_X^2+(m-1)S_Y^2}{n+m-2}}\sqrt{\frac{1}{n}+\frac{1}{m}}}\cdot\frac{\sigma}{\sigma}=\frac{z}{\sqrt{\frac{(n-1)S_x^2+(m-1)S_y^2}{\sigma^2(n+m-2)}}}=\frac{z}{\sqrt{\frac{\frac{(n-1)S_x^2}{\sigma^2}+\frac{(m-1)S_y^2}{\sigma^2}}{n+m-2}}}=\frac{z}{\sqrt{\frac{\mathcal{X}^2_{n-1}+\mathcal{X}^2_{m-1}}{n+m-2}}}=\frac{z}{\sqrt{\frac{\mathcal{X}^2_{n+m-2}}{n+m-2}}}\sim T_{n+m-2}$\\
+\end{center}
+\textit{Numerator independent of denominator since numerator depends on $\overline{x}$ and $\overline{y}$ while deonminator depends on $S_x^2$ and $S_y^2$.}
+\subsubsection{Example}
+You are curious to study the difference in the average time you spend on Spotify per day between weekdays and weekends. You collect data on 60 weekdays and 50 weekend’s days. It is reasonable to assume equal variances. Here the results (in minutes):
+\begin{center}
+    \begin{tabular}{c|c|c}
+         & \textbf{Week} & \textbf{Weekends} \\
+         \hline
+        \textbf{Mean} & 58 & 62\\
+        \hline
+        \textbf{Sd} & 10 & 12\\
+        \hline
+        \textbf{N} & 60 & 50
+    \end{tabular}
+\end{center}
+Let $\mu_d$ be the average difference between weeks and weekends in terms of the amount of time spent on spotify per day.\\
+$H_0$: $\mu_d=0$\hspace*{0.5in}$H_1$:$\mu_d\neq 0$\\
+$S_p^2=\frac{(n-1)S_x^2+(m-1)S_y^2}{n+m-2}=\frac{59(10^2)+49(12^2)}{60+50-2}=119.963$\\
+$T=\frac{\overline{X}-\overline{Y}}{S_P\sqrt{\frac{1}{n}+\frac{1}{m}}}=\frac{58-62}{\sqrt{119.963}\sqrt{\frac{1}{60}+\frac{1}{50}}}=-1.907$\\
+$2P(t_{60+50-2}\leq-1.907)\sim0.059$, so we fail to reject $H_0$.
+\subsection{Welch's Approximation (Non Equal Variances)}
+\label{sec:notEqualV}
+$\sigma_X^2\neq\sigma_Y^2$ unknown\\
+We could consider $T_v=\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sqrt{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}}$ but $T_v$ doesn't have a $t$ distribution. We can use Welch's Approximation which shows $T_v$ has appriximately a Student $t$ distribution\\
+\textbf{Welch's Approximation}\\
+If $X_1\dots,X_n$ and $Y_1,\dots,Y_m$ are independent with $X_i\sim\mathcal{N}(\mu_x,\sigma^2_X)$ and $Y_i\sim\mathcal{N}(\mu_Y,\sigma^2_Y)$ then
+\begin{center}
+    $T_v=\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sqrt{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}}$
+\end{center}
+has approximately a Student $t$ distribution with $v$ degrees of freedom, where
+\begin{center}
+    $v=\frac{(\frac{S_X^2}{n}+\frac{S_Y^2}{m})^2}{\frac{S_X^4}{n^2(n-1)}+\frac{S_Y^4}{m^2(m-1)}}$
+\end{center}
+When $v$ is not integer, we round to the nearest integer\\
+We can use this approximation test to then create confidence intervals/hypothesis tests using the $t$ distribution
+\subsubsection{Proof}
+$T_v=\frac{\overline{X}-\overline{Y}-(\mu_X-\mu_Y)}{\sqrt{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}}\cdot\frac{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}{\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}=\frac{Z}{\sqrt{\frac{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}}}$\\
+\textit{If $\frac{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}=\frac{\mathcal{X}^2_v}{v}$ then $T_v\sim t_v$ but we can't find $v$ that makes this possible}\\
+$\frac{S_X^2}{n}+\frac{S_Y^2}{m}=\frac{\mathcal{X}^2_v}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]$\\
+$\mathbb{E}[\frac{S_X^2}{n}+\frac{S_Y^2}{m}]=\frac{\mathbb{E}[\mathcal{X}^2_v]}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]$\\
+$\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}=\frac{v}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]$\\
+\newline
+$Var(\frac{S_X^2}{n}+\frac{S_Y^2}{m})=\frac{Var(\mathcal{X}^2_v)}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2$\\
+$\frac{Var(S_X^2)}{n^2}+\frac{Var(S_Y^2)}{m^2}=\frac{2v}{v^2}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2$\\
+$\frac{2\sigma_X^4}{n^2(n-1)}+\frac{2\sigma_Y^4}{m^2(m-1)}=\frac{2}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2$\\
+$\frac{\sigma_X^4}{n^2(n-1)}+\frac{\sigma_Y^4}{m^2(m-1)}=\frac{1}{v}\cdot[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2\rightarrow v=\frac{[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2}{\frac{\sigma_X^4}{n^2(n-1)}+\frac{\sigma_Y^4}{m^2(m-1)}}$
+\subsubsection{Example}
+I was having a funny conversation with my mum and my dad. My dad was claiming
+that he sends me on average messages that are shorter than the ones my mum sends
+me. My mum was instead saying that on average their messages’ lengths are the
+same. Because I am a statistician, I decided to collect data and I looked through my
+phone and recorded the length, in number of characters, of 50 random messages I
+received from my mum and 55 random messages I received from my dad. Below are
+the data:
+\begin{center}
+    \begin{tabular}{c|c|c}
+         & \textbf{Mum} & \textbf{Dad} \\
+         \hline
+        \textbf{Mean} & 65 & 61\\
+        \hline
+        \textbf{Sd} & 21 & 16.1\\
+        \hline
+        \textbf{N} & 50 & 55
+    \end{tabular}
+\end{center}
+Let $\mu_d$ be the average difference in terms of length between my mom's messages and my dad's messages\\
+$H_0$:$\mu_d=0$\hspace*{0.5in}$H_1$:$\mu_d>0$\\
+Independence within and between samples by randomness and sample size large enough so we assume normality\\
+$T_v=\frac{\overline{X}-\overline{Y}}{\sqrt{\frac{S_X^2}{n}+\frac{S_Y^2}{m}}}=\frac{65-61}{\sqrt{\frac{21^2}{50}+\frac{16.1^2}{55}}}\approx 1.087$\hspace*{0.2in}$v=\frac{[\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}]^2}{\frac{\sigma_X^4}{n^2(n-1)}+\frac{\sigma_Y^4}{m^2(m-1)}}=\frac{(\frac{21^2}{50}+\frac{16.1^2}{55})^2}{\frac{21^4}{50^2(49)}+\frac{16.1^4}{55^2(54)}}\approx 91.619\rightarrow_{round} v=91$\\
+$P-Value=P(t_{91}\geq 1.087)\approx 0.14$ so we fail to reject $H_0$\\
+$80\%$ confidence interval\hspace*{0.2in}[$\overline{X}-\overline{Y}\pm_{v,0.10}\sqrt{\frac{S_x^2}{n}+\frac{S_y^2}{m}}$]\hspace*{0.2in}$[-0.748,8.748]$
+\section{Wilk's Theorem}
+\label{sec:wilk}
+$\sigma_X^2\neq\sigma_Y^2$ unknown\\
+$X_1\dots,X_n$ and $Y_1,\dots,Y_m$ are independent with $X_i\sim\mathcal{N}(\mu_x,\sigma^2_X)$ and $Y_i\sim\mathcal{N}(\mu_Y,\sigma^2_Y)$\\
+Want to compare $\mu_x$ and $\mu_Y$ using the GLRT test\\
+\newline
+$\theta=(\mu_x,\mu_Y,\sigma_X^2,\sigma_Y^2)$\\
+$\theta\in H_0 \leftrightarrow\{\theta\vert\mu_X=\mu_Y=\mu\in\mathbb{R},\sigma_X^2\in\mathbb{R}^+,\sigma_Y^2\in\mathbb{R}^+\}$\\
+$\theta\in\Omega\leftrightarrow\{\theta\vert\mu_X\in\mathbb{R},\mu_Y\in\mathbb{R},\sigma_X^2\in\mathbb{R}^+,\sigma_Y^2\in\mathbb{R}^+\}$\\
+$L(\theta)=(2\pi)^\frac{-n}{2}(\sigma_X^2)^\frac{-n}{2}exp(\frac{-1}{2\sigma_X^2}\sum(x_i-\mu_X)^2)\cdot(2\pi)^\frac{-m}{2}(\sigma_Y^2)^\frac{-m}{2}exp(\frac{-1}{2\sigma_Y^2}\sum(y_i-\mu_Y)^2)$\\
+$\ln L(\theta)=\frac{-n}{2}\ln(2\pi)-\frac{-n}{2}\ln(\sigma_X^2)-\frac{1}{2\sigma_X^2}\sum(x_i-\mu_X)-\frac{m}{2}\ln(2\pi)-\frac{m}{2}\ln(2\sigma_Y^2)-\frac{1}{2\sigma_Y^2}\sum(y_i-\mu_Y)^2$\\
+$max_{\theta\in H_0}L(\theta)$\\
+$\frac{\partial\ln L(\theta)}{\partial\mu}=0\rightarrow \hat\mu=\frac{\sigma_Y^2n\overline{X}+\sigma_X^2m\overline{Y}}{m\sigma_X^2+n\sigma_Y^2}$\\
+$\frac{\partial\ln L(\theta)}{\partial\sigma_X^2}=0\rightarrow\hat\sigma_X^2=\frac{\sum(x_i-\mu)^2}{n}$\\
+$\frac{\partial\ln L(\theta)}{\partial\sigma_Y^2}=0\rightarrow\hat\sigma_Y^2=\frac{\sum(y_i-\mu)^2}{m}$\\
+$max_{\theta\in\Omega}L(\theta)$\\
+$\frac{\partial\ln L(\theta)}{\partial\mu_X}=0\rightarrow\hat\mu_x=\overline{X}$\\
+$\frac{\partial\ln L(\theta)}{\partial\mu_Y}=0\rightarrow\hat\mu_Y=\overline{Y}$\\
+$\frac{\partial\ln L(\theta)}{\partial\sigma_X^2}=0\rightarrow\hat\sigma_X^2=\frac{\sum(x_i-\mu)^2}{n}$\\
+$\frac{\partial\ln L(\theta)}{\partial\sigma_Y^2}=0\rightarrow\hat\sigma_Y^2=\frac{\sum(y_i-\mu)^2}{m}$\\
+\newline
+$\wedge = \frac{max_{\theta\in H_0}L(\theta)}{max_{\theta\in\Omega}L(\theta)}=[\frac{1}{n}\sum_{i=1}^n(x_i-\frac{\sigma_Y^2n\overline{X}+\sigma_X^2m\overline{Y}}{m\sigma_X^2+n\sigma_Y^2})^2]^\frac{-n}{2}\cdot[\frac{1}{m}\sum_{i=1}^m(y_i-\frac{\sigma_Y^2n\overline{X}+\sigma_X^2m\overline{Y}}{m\sigma_X^2+n\sigma_Y^2})^2]^\frac{-m}{2}(\frac{1}{n}\sum(x_i-\overline{X})^2)\cdot(\frac{1}{m}\sum(y_i-\overline{Y})^2)exp[\frac{-n}{2}-\frac{m}{2}+\frac{n}{2}+\frac{m}{2}]$\\
+\textbf{We Can use Wilk's Theorem Here}\\
+Let $\Omega=\{\theta:\theta\in H_0\cup H_1\}$ and $\wedge=\frac{max_{\theta\in H_0}L(\theta)}{max_{\theta\in\Omega}L(\theta)}$. No matter what the distribution sample data come from, under the null, $-2\log\wedge$ has asymptotic distribution $\mathcal{X}^2_k$, where $k$ is the difference in dimensionality between $\Omega$ and $\{\theta\in H_0\}$
+\subsection{Example}
+You work for the customer service of an insurance company.
+Assume that the number of complaints per week on the i-th shift has a Poisson
+distribution with mean $\theta_i$. You are curious to compare the average number of complaints between shift 1 and 2. 100 independent observations on the number of
+complaints gave means $\overline{x}=20$ for shift 1 and $\overline{y} = 22$ for shift 2. Use the generalized likelihood ratio test. Use $\alpha=0.01$.\\
+For the GLR we get\\
+$\wedge=\frac{L(\hat\theta)}{L(\hat\theta_1,\hat\theta_2)}=\frac{(\frac{n\overline{x}+m\overline{y}}{n+m})^{\sum x_i+\sum y_i}}{\overline{x}^{\sum x_i}\cdot\overline{y}^{\sum y_i}}\approx 0.00853$\\
+Using Wilk's theorem (difference in dimensionality is 1)\\
+We reject $H_0$ id $-2\ln\wedge=9.53\geq\mathcal{X}^2_{1,1-\alpha}=6.635$, so we reject $H_0$
+\section{Two Population Variances Inference}
+\label{sec:twoPVar}
+$X_1,\dots,X_n\sim_{iid}\mathcal{N}(\mu_X,\sigma_X^2)$\hspace*{0.5in}$Y_1,\dots,Y_m\sim\mathcal{N}(\mu_Y,\sigma_Y^2)$\\
+$\frac{(n-1)S_X^2}{\sigma_X^2}\sim\mathcal{X}^2_{n-1}$\hspace*{0.5in}$\frac{(m-1)S_Y^2}{\sigma_Y^2}\sim\mathcal{X}^2_{m-1}$\hspace*{0.5in}$S_X^2$ and $S_Y^2$ are independent\\
+$F=\frac{S_Y^2/\sigma_Y^2}{S_X^2/\sigma_X^2}=\frac{(n-1)}{(n-1)}\cdot\frac{(m-1)}{(m-1)}\cdot\frac{S_Y^2/\sigma_Y^2}{S_X^2/\sigma_X^2}=\frac{\frac{(m-1)S_Y^2}{\sigma_Y^2}/(m-1)}{\frac{(n-1)S_X^2}{\sigma_X^2}/(n-1)}\sim\frac{\frac{\mathcal{X}^2_{m-1}}{m-1}}{\frac{\mathcal{X}^2_{n-1}}{n-1}}\sim F_{m-1,n-1}$\\
+\textbf{Confidence Interval for $\frac{\sigma_X^2}{\sigma_Y^2}$}\\
+$[\frac{S_X^2}{S_Y^2}F_{\alpha/2,m-1,n-1},\frac{S_X^2}{S_Y^2}F_{1-\alpha/2,m-1,n-1}]$
+\newpage
+\textbf{Hypothesis Test}\\
+$H_0:\sigma_X^2=\sigma_Y^2$\\
+Test Statistic: $S_Y^2/S_X^2$\\
+\begin{tabular}{c|c}
+    $H_1$ & Reject \\
+    \hline
+     $\sigma_X^2>\sigma_Y^2$ & test stat $\leq F_{\alpha,m-1,n-1}$\\
+     \hline
+     $\sigma_X^2<\sigma_Y^2$ & test stat $\geq F_{1-\alpha,m-1,n-1}$\\
+     \hline
+     $\sigma_X^2\neq\sigma_Y^2$ & test state $\leq F_{\alpha,m-1,n-1}$ or test stat $\geq F_{1-\alpha,m-1,n-1}$
+\end{tabular}
+\subsection{Example}
+You are working at a coffee shop. Your boss is looking into buying a new
+coffee machine. He is undecided between two machines. Both machines
+produce, on average, the same amount of coffee. To avoid complaint from
+her client, your boss wants to buy the machine with less variability in the
+amount of coffee produced. The manufacturer claims that she should buy
+machine A. Since she knows you are taking a statistic class, she asks for
+your help. You make 60 coffees, 30 with machine A and 30 with machine B
+and you record their sizes, in ounces.
+\begin{center}
+    \begin{tabular}{c|c|c}
+         & A & B \\
+         \hline
+         Mean & 15.1 & 15.2\\
+         \hline
+         Var & 10 & 12\\
+         \hline
+         N & 30 & 30
+    \end{tabular}
+\end{center}
+Let $\sigma_a^2/\sigma_b^2$ be the variance in size of coffee produced by machine A and B respectively\\
+$H_0:\sigma_a^2=\sigma_b^2$\hspace*{0.5in}$H_1:\sigma_a^2<\sigma_b^2$\\
+Assumptions: Independence within and between samples ok by sampling/ don't know normality need to look at data\\
+$F=\frac{S_b^2}{S_a^2}=\frac{12}{10}=1.2$\hspace*{0.5in}$F\sim F_{29,29}$ under $H_0$\\
+Reject if $F>F_{0.95,29,29}=1.861$\\
+We fail to reject $H_0$, so we don't have enough evidence to support the claim that machine $A$ has smaller variance.
+\section{Two Population Proportion Hypothesis Test and Confidence Interval}
+\label{sec:twoPProp}
+$X\sim B(n,p_X)$\hspace*{0.5in}$Y\sim B(m,p_Y)$\\
+estimator: $\hat p_x-\hat p_y=\frac{x}{n}-\frac{y}{m}$\\
+distribution of estimator\\
+$\frac{X}{n}\sim_{app}\mathcal{N}(p_x,\frac{p_x(1-p_x)}{n})$ and $\frac{Y}{m}\sim_{app}\mathcal{N}(p_y,\frac{p_y(1-p_y)}{m})$ if $np_x,n(1-p_x),mp_y,m(1-p_y)\geq 10$\\
+$\frac{X}{n}-\frac{Y}{m}\sim_{app}\mathcal{N}(p_x-p_y,\frac{p_x(1-p_x)}{n}+\frac{p_y(1-p_y)}{m})$\\
+\textit{For confidence intervals and hypothesis tests we will use MLE for $p_x$ and $p_y$}\\
+\textbf{Confidence Interval}\\
+$[\frac{x}{n}-\frac{y}{n}\pm\sqrt{\frac{\frac{x}{n}(1-\frac{x}{n})}{n}+\frac{\frac{y}{m}(1-\frac{y}{m})}{m}}]$\\
+\textbf{Hypothesis Test}\\
+$p_e=\frac{x+y}{n+m}$\\
+Test Statistic: $Z=\frac{\frac{x}{n}-\frac{y}{m}}{\sqrt{\frac{p_e(1-p_e)}{n}+\frac{p_e(1-p_e)}{m}}}$\\
+$Z\sim_{app}\mathcal{N}(0,1)$\\
+P-Value: $P(Z\leq z)$, $P(Z\geq z)$, or $2P(Z\leq-\vert z\vert)$
+\newpage
+\subsection{Example}
+In a recent Harvard-Harris national poll, respondents were asked if they
+agreed with the claim ‘There is a lot of fake news in the mainstream media’.
+498 of 624 Republicans agreed with the claim, while 370 of 696 Democrats
+agreed with the claim. We are curious to know if the percentage of
+Republicans that agree with the claim is the same as the percentage of
+Democrats who agree with the claim.\\
+$H_0:P_R=P_D$\hspace*{0.5in}$H_1:P_R\neq P_D$\\
+$n=624$\hspace*{0.25in}$x=498$\hspace*{0.25in}$m=696$\hspace*{0.25in}$y=370$\\
+Assumptions: approximately normal since $x,nix,y,m-y\geq 10$/independence between and within samples\\
+$p_e=\frac{x+y}{n+m}=\frac{498+370}{624+696}\approx0.658$\\
+$Z=\frac{\frac{x}{n}-\frac{y}{m}}{\sqrt{\frac{p_e(1-p_e)}{n}+\frac{p_e(1-p_e)}{m}}}=\frac{\frac{498}{624}-\frac{370}{696}}{\sqrt{\frac{0.658(1-0.658)}{624}+\frac{0.658(1-0.658)}{696}}}\approx10.171$\\
+P-Value$=2P(z\leq 10.171)\approx0$\\
+We reject $H_0$ and there is strong evidence against the fact that the proportion of people that agree with the claim is the same between republicans and democrats.
+\section{Multinomial Distribution}
+\label{sec:multinom}
+We have $n$ individuals and $t$ distinct outcomes. Suppose $k_1,k_2,\dots,k_t$ are nonnegative integers such that $k_1+k_2+\dots+k_t=n$. The number of ways to have $k_i$ for outcome $r_i$ for all $i=1,\dots,t$ is $\binom{n}{k_1,k_2,\dots,k_t}=\frac{n!}{k_1!k_2!\dots k_t!}$\\
+\newline
+The $t$ types of outcomes labeled $r_1,\dots,r_t$ have respective probabilities $p_1,\dots,p_t$. When repeated $n$ times (independent trials), suppose we get $X_i$ of type $r_i$, then:\\
+$P((X_1,\dots,X_t)=(k_1,\dots,k_t))=\binom{n}{k_1,\dots,k_t}p_1^{k_1}\dots p_t^{k_t}$\\
+$\sum_{i=1}^tp_i=1$\hspace*{0.25in}$\sum_{i=1}^tk_i=n$\hspace*{0.25in}$(X_1,\dots,X_t)\sim Multinom(n,p_1,\dots,p_t)$
+\subsection{Example}
+Your friend’s mood on a random day is modeled by $X\sim Beta(3,2)$ where $X$
+is the degree of happiness on a [0,1] scale. Suppose the research literature
+sets these labels based on happened ranges - Bad : [0,0.2), Fair: [0.2,0.5),
+Good: [0.5,0.7), Great: [0.7,1]. What is the probability your friend will
+have 3 fair days, 2 great days and 2 bad days next week?\\
+$(B,F,G,GR)\sim Multinom(7,P_B,P_F,P_G,P_{GR})$\\
+$f(x)=\frac{\Gamma(5)}{\Gamma(3)\Gamma(2)}x^2(1-x)^1=12x^2(1-x)$\\
+$P_B=\int_0^{0.2}f(x)dx=0.0272$\\
+$P_F=\int_{0.2}^{0.5}f(x)dx=0.2853$\\
+$P_G=\int_{0.5}^{0.7}f(x)dx=0.3392$\\
+$P_{GR}=1-P_G-P_F-P_B=0.3483$\\
+$P((B,F,G,GR)=(2,3,0,2))=\binom{7}{2,3,0,2}P_B^2P_F^3P_G^0P_{GR}^2=4.377\times10^{-4}$
+\subsection{Joint to Marginal Distribution}
+If $f_{(x,y)}(x,y)$ is a joint pdf, then $f_X(x)=\int_{-\infty}^\infty f(x,y)dy$. For discrete RVs, this is $p_X(x)=\sum_yp(x,y)$.\\
+\newline
+If $(X_1,\dots,X_t)\sim Multinom(n,p_1,\dots,p_t)$ then $X_i\sim Binom(n,p_i)$\\
+\textbf{Proof}\\
+$P(X_1=a)=\sum_{k_2,\dots,k_t}P((X_1,\dots,X_t)=(a,k_2,\dots,k_t))=\sum_{k_2,\dots,k_t}\frac{n!}{a!k_2!\dots k_t!}p_1^ap_2^{k_2}\dots p_t^{k_t}\\=\frac{n!}{a!(n-a)!}p_1^a(1-p_1)^a\sum_{k_2,\dots,k_t}\frac{(n-a)!}{k_2!\dots k_t!}\frac{p_2^{k_2}\dots p_t^{k_t}}{(1-p_1)^{n-a}}=\binom{n}{a}p_1^a(1-p_1)^a\sum_{k_2,\dots,k_t}\binom{n-a}{k_2,\dots,k_t}(\frac{p_2}{1-p_1})^{k_2}\dots(\frac{p_t}{1-p_1})^{k_t}\\=\binom{n}{a}p_1^a(1-p_1)^a$\\
+\textit{Second half is the pdf of a multinom distribution so summations is 1}
+\newpage
+\section{Goodness of Fit Test}
+\label{sec:goodness}
+\subsection{Goodness of Fit Test with Known Parameters}
+\label{sec:goodKnown}
+Let $r_1,r_2,\dots,r_t$ be the set of possible outcomes associated with each of $n$ independent trials, where $P(r_i)=p_i, i=1,2,\dots,t$. Given observed counts $X_i=\text{number of times }r_i\text{ occurs},i=1,\dots,t$. Then $D=\sum_{i=1}^t\frac{(X_i-np_i)^2}{np_i}$ has approximately a $\mathcal{X}^2_{t-1}$ distribution. The $t$ classes should be defined so that $np_i\geq 5$. The p-value for this test is $P(\mathcal{X}^2_{t-1}\geq d)$.
+\subsubsection{Example Discrete}
+We are playing with a four-sided data and we are curious to know if it is fair. We roll the die 100 times and we get 24 times 1, 27 times 2, 26 times 3 and 23 times 4.\\
+$H_0:p_1=\frac{1}{4},p_2=\frac{1}{4},p_3=\frac{1}{4},p_4=\frac{1}{4}$
+\begin{center}
+    \begin{tabular}{c|c}
+        Observed & Expected \\
+        \hline
+        24 & 25\\
+        \hline
+        27 & 25\\
+        \hline
+        26 & 25\\
+        \hline
+        23 & 25
+    \end{tabular}
+\end{center}
+$D=\frac{(24-25)^2}{25}+\frac{(27-25)^2}{25}+\frac{(26-25)^2}{25}+\frac{(23-25)^2}{25}=0.40$\\
+P-Value=$P(\mathcal{x}^2_3\geq 0.40)\approx 0.94$\\
+We fail to reject $H_0$ so we don't have enough evidence against the idea that the dice is fair.
+\subsubsection{Example Continuous}
+ \textit{For a continuous distribution, we can create bins and must make sure that the expected count for each bin is greater than or equal to 5}\\
+ How loudly do people speak in normal conversation? You design an instrument that reads this level on [0,1] scale and think it might follow the pdf $f_X(x)=20x^2(1-x)$ with $0\leq x\leq 1$. You choose these labels to help categorize people: Soft ($x\in[0,.4]$), Average ($x\in[.4,.8]$) and Loud ($x\in[.8,1]$).You test 60 random people, 4 of them fall into the Soft category while 30 fall into the Average one. Conduct a HT for your model with $\alpha = 0.03$.\\
+ $H_0:f(x)=20x^3(1-x)$\hspace*{0.25in}$H_1:f(x)\neq20x^3(1-x)$\\
+ $P_s=\int_0^{0.4}20x^3(1-x)dx\approx0.087$\hspace*{0.25in}$P_A=\int_{0.4}^{0.8}20x^2(1-x)dx\approx0.65$\hspace*{0.25in}$P_L=1=0.65-0.087=0.263$\\
+ \begin{center}
+    \begin{tabular}{c|c|c}
+        &Observed & Expected \\
+        \hline
+        S& 4 & $60(0.087)=5.22$\\
+        \hline
+        A& 30 & $60(0.65)=39$\\
+        \hline
+        L& 26 & $60(0.263)=15.78$\\
+    \end{tabular}
+\end{center}
+$D=\frac{(4-5.22)^2}{5.22}+\frac{(30-39)^2}{39}+\frac{(26-15.78)^2}{15.78}\approx8.98$\\
+P-Value=$P(\mathcal{X}^2_2\geq8.98)\approx0.011$\\
+We reject $H_0$ so it doesn't seem that the proposed distribution fits the data well.
+\subsection{Goodness of Fit with Unknown Parameters}
+\label{sec:goodUnknown}
+Similar to the goodness of fit test with known parameters, but this time each $\hat p_i$ is replaced by the maximum likelihood estimator for the unknown parameters. $D=\sum_{i=1}^t\frac{X_i-n\hat p_i)^2}{n\hat p_i}$ has approximately a $\mathcal{X}^2_{t-1-s}$ distribution, where $t$ is the number of classes and $s$ is the number of parameters that are estimated.
+\subsubsection{Example}
+Your friend claims that hair types (curly, wavy, straight) are determined by a
+gene (H or h) that shows incomplete dominance. This means there are 3 phenotypes based on the four genotypes: Curly (HH), Wavy (Hh or hH), and Straight (hh). Your friend also claims that the probability an Hh parent passes on the H allele is p (which may not be 50\%). You collect data on the
+children of 100 heterozygous couples and find (C,W,S)=(48,41,11). Test your friend's theory using $\alpha=0.06$.\\
+$H_0:p_c=p^2,p_w=2p(1-p),p_s=(1-p)^2\hspace*{0.2in}p\in[0,1]$\\
+\textbf{Find MLE for $P$ under $H_0$}\\
+$(c,w,s)\sim Multinom(100,p^2,2p(1-p),(1-p)^2)$\\
+$(c,w,s)=(48,41,11)$\\
+$L(p)=\binom{100}{48,41,11}p^{2\cdot48}(2p(1-p))^{41}(1-p)^{2\cdot11}=c\cdot p^{137}(1-p)^{63}$\\
+$\ln L(p)=c + 137\ln p+63\ln(1-p)$\\
+$\frac{\partial\ln L(p)}{\partial p}=\frac{137}{p}-\frac{63}{1-p}=0\rightarrow\hat p=\frac{137}{200}=0.685$\\
+$H_0:\hat p_c=(0.685)^2,\hat p_w=2(0.685)(1-0.685),\hat p_s=(1-0.685)^2$
+\begin{center}
+    \begin{tabular}{c|c|c}
+         & Observed & Expected\\
+         \hline
+         C & 48 & 46.9225\\
+         \hline
+         W & 41 & 43.155\\
+         \hline
+         S & 11 & 9.9225
+    \end{tabular}
+\end{center}
+$D=\frac{(48-46.9225)^2}{46.9225}+\frac{(41-43.155)^2}{43.155}+\frac{(11-9.9225)^2}{9.9225}\approx0.25$\\
+P-Value=$P(\mathcal{X}^2_1\geq0.25)=0.6171$\\
+We fail to reject $H_0$ so we don't have enough evidence against the friends theory.
+\section{Test For Independence}
+\label{sec:independence}
+Let $S$ be a sample space that can be disjointly partitioned by event $A_1,\dots,A_r$ or $B_1,\dots,B_c$. Given $n$ random observations, let $X_{ij}$ be the number that satisfies $A_i\cap B_j$. $X_{ij}\sim Binom(n,p_{ij}=P(A_i\cap B_j))$.\\
+\newline
+$H_0:$ The two random variable are independent\hspace*{0.5in}$H_1:$ The two random variables are dependent\\
+Under $H_0$, we have $p_{ij}=P(A_i\cap B_j)=P(A_i)P(B_j)=p_iq_j$, so the expected counts $E_{ij}=np_iq_j$. We can estimate the probabilities by their MLEs: $\hat p_i=\frac{R_i}{n}$ and $\hat q_j=\frac{C_j}{n}$. Therefore $\hat E_{ij}=n\hat p_i\hat q_j=\frac{R_iC_j}{n}$. $D_2=\sum_{i=1}^r\sum_{j=1}^c\frac{(X_{ij}-np_{ij})^2}{np_{ij}}$ has approximately $\mathcal{X}^2_{(r-1)(c-1)}$ distribution. $n\hat p_i\hat q_j\geq 5$ for all $i$ and $j$.
+\subsection{Example}
+You are curious to see if the preference for in person or online lectures of UCSD students depends on their college year. You interview 300 random UCSD students and this is what you get:
+\begin{center}
+    \begin{tabular}{c|c|c|c}
+         & In Person & Online & Total \\
+         \hline
+       Freshman & 33 & 37 & 70\\
+       \hline
+       Sophmore & 35 & 38 & 73\\
+       \hline
+       Junior & 50 & 30 & 80\\
+       \hline
+       Senior & 27 & 50 & 77\\
+       \hline
+       Total & 145 & 155 & 300
+    \end{tabular}
+\end{center}
+We can start by getting the expected values
+\begin{center}
+    \begin{tabular}{c|c|c}
+         & In Person & Online \\
+         \hline
+        Freshman & $\frac{70(145)}{300}=33.833$ & $\frac{70(155)}{300}=36.16667$\\
+        \hline
+        Sophmore & $\frac{73(145)}{300}=35.28333$ & $\frac{73(155)}{300}=37.71667$\\
+        \hline
+        Junior & $\frac{80(145)}{300}=38.66667$ & $\frac{80(155)}{3000}=41.33333$\\
+        \hline
+        Senior & $\frac{77(145)}{300}=37.21667$ & $\frac{77(155)}{300}=39.78333$
+    \end{tabular}
+\end{center}
+$D_2=\frac{(33-33.833)^2}{33.833}+\frac{(37-36.16667)^2}{36.16667}+\dots=11.9$\\
+$df=(r-1)(c-1)=(4-1)(2-1)=3$\\
+P-Value=$P(\mathcal{X}^2_3\geq11.9)\approx0.008$\\
+We reject $H_0$, so we have evidence against the independence between class preference and college year at UCSD.
+\section{Linear Regression}
+\label{sec:linear}
+\subsection{Correlation}
+Measuring the linear association between two numeric variables $\{x_1,\dots,x_n\}$ and $\{y_1,\dots,y_n\}$\\
+$r=\frac{1}{n-1}\sum_{i=1}^n(\frac{x_i-\overline{x}}{s_x})(\frac{y_i-\overline{y}}{s_y})$
+\begin{itemize}
+    \item $-1\leq r\leq 1$
+    \item $r=1$: perfect positive linear association
+    \item $r=-1$: perfect negative linear association
+    \item $r=0$: no association
+    \item $0<r\leq1$: positive linear association
+    \item $-1\leq r<0$: negative linear association
+    \item $r$ does not change with linear changes of scale and it is unitless
+\end{itemize}
+\subsection{Least squares regression line}
+The regression line is $\hat{y}=a+bx$ and we want to minimize $L(f)=\sum_{i=1}^n(y_i-\hat{y})^2=\sum_{i=1}^n(y_i-(a+bx_i))^2$\\
+$b=\frac{n\sum_{i=1}^nx_iy_i-(\sum_{i=1}^nx_i)(\sum_{i=1}^ny_i)}{n(\sum_{i=1}^nx^2_i)-(\sum_{i=1}^nx_i)^2}=\frac{r\cdot S_y}{S_x}$\hspace*{0.5in}$a=\frac{\sum_{i=1}^ny_i-b\sum_{i=1}^nx_i}{n}=\overline{y}-b\overline{x}$\\
+\textbf{Proof}\\
+$\text{min}_{a,b}\sum+{i=1}^n(y_i-a-bx_i)^2$\\
+$\frac{\partial L}{\partial a}=-2\sum_{i=1}^n(y_i-a-bx_i)=\sum_{i=1}^ny_i-na-n\sum_{i=1}^nx_i=0\rightarrow a=\frac{\sum_{i=1}^ny_i-b\sum_{i=1}^nx_i}{n}=\overline{y}-b\overline{x}$\\
+$\frac{\partial L}{\partial b}=-2\sum_{i=1}^n(y_i-a-bx_i)x_i=\sum_{i=1}^ny_ix_i-a\sum_{i=1}^nx_i-b\sum_{i=1}^nx^2_i=0\rightarrow b=\frac{\sum_{i=1}^ny_ix_i-b\overline{y}\overline{x}}{\sum_{i=1}^nx_i^2-n\overline{x}^2}$\\
+\textbf{Interpretation of $a,b$}
+\begin{itemize}
+    \item Slope $b$, If the explanatory variable $x_0$ increases by one point, we expect the response variable $\hat{y}$ to increase on average of $b$
+    \item Intercept $a$, If the explanatory variable $x_0=0$, we expect the response variable to have an average value of $a$
+    \item The regression line always goes through $(\overline{x},\overline{y})$
+    \item If $x=\overline{x}+S_x$, ($x$ is one standard deviation above the mean), we predict $y$ to be $r$ standard deviations above the mean
+    \item Regression Effect: Since $-1\leq r\leq 1$, we never predict $y$ to be more standard deviations above or below the mean that $x$ is
+\end{itemize}
+\subsection{Residual Plot}
+Residual Plot: Plot of residuals versus explanatory variable\\
+\newline
+If the residual plot shows \textit{some pattern or curvature} the relationship between $y$ and $x$ is not linear and therefore is not appropriate to use linear regression
+\begin{center}
+\includegraphics[scale=0.2]{residual.jpeg}
+\end{center}
+\subsection{Nonlinear Model}
+$f(y)=\overset{\sim}{a}+\overset{\sim}{b}g(x)$\\
+$\overset{\sim}{a}=\overline{f(y)}-\overset{\sim}{b}\overline{g(x)}$\\
+$\overset{\sim}{b}=\frac{n\sum g(x_i)f(y_i)-\sum g(x_i)\sum f(y_i)}{n\sum g(x_i)^2-(\sum g(x_i))^2}$
+\subsubsection{Exponential Regression}
+$y=ae^{bx}$\\
+$\ln y=\ln a+bx$ ($\ln y$ is linear in $x$)\\
+$\overset{\sim}{a}=\ln a=\overline{\ln y}-b\overline{x}\rightarrow a=e^{\overline{\ln y}-b\overline{x}}$\\
+$\overset{\sim}{b}=b=\frac{n\sum x_i\ln y_i-\sum x_i\sum\ln y_i}{n\sum x_i^2-(\sum x_i)^2}$
+\subsubsection{Logarithmic Regression}
+$y=ax^b$\\
+$\ln y=\ln a+b\ln x$\\
+$\overset{\sim}{a}=\ln a=\overline{\ln y}-b\overline{\ln x}\rightarrow a=e^{\overline{\ln y}-b\overline{\ln x}}$\\
+$\overset{\sim}{b}=b=\frac{n\sum\ln x_i\ln y_i-\sum\ln y_i\sum\ln x_i}{n\sum(\ln x_i)^2-(\sum\ln x_i)^2}$
+\subsubsection{Logistic Regression}
+$y=\frac{L}{1+e^{-a-bx}}$\\
+$\frac{L}{y}=1+e^{-a-bx}$\\
+$\frac{L-y}{y}=e^{-a-bx}$\\
+$\frac{y}{L-y}=e^{a+bx}$\\
+$\ln(\frac{y}{L-y})=a+bx$\\
+$\overset{\sim}{a}=a=\overline{\ln(\frac{y}{L-y})}-b\overline{x}$\\
+$\overset{\sim}{b}=b=\frac{n\sum x_i\ln(\frac{y_i}{L-y_i})-\sum x_i\sum\ln(\frac{y_i}{L-y_i})}{n\sum x_i^2-(\sum x_i)^2}$
+\subsection{Simple Linear Model}
+\begin{itemize}
+    \item $Y\sim\mathcal{N}(\beta_0+\beta_1x,\sigma^2)$
+    \item $Y_i$ are independent for different $i$
+    \item True regression line: $y=E[Y]=\beta_0+\beta_1x$
+    \item Given $x_1,\dots,x_n$ we have $Y_i=\beta_0+\beta_1x_i+\epsilon_i$ where $\epsilon_i\sim\mathcal{N}(0,\sigma^2)$
+\end{itemize}
+\subsubsection{MLE Estimators}
+The maximum likelihood estimators for $\beta_0,\beta_1$, and $\sigma^2$ are given by
+\begin{itemize}
+    \item $\hat{\beta_1}=\frac{n\sum_{i=1}^nx_iY_i-(\sum_{i=1}^nx_i)(\sum_{i=1}^nY_i)}{n(\sum_{i=1}^nx_i^2)-(\sum_{i=1}^nx_i)^2}$
+    \item $\hat{\beta_0}=\overline{Y}-\hat{\beta_1}\overline{x}$
+    \item $\hat{\sigma}^2=\frac{1}{n}\sum_{i=1}^n(Y_i-\hat{Y}_i)^2$
+\end{itemize}
+\textbf{Proof}
+$L(\beta_0,\beta_1,\sigma^2)=\prod_{i=1}^n\frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{-(Y_i-\beta_0-\beta_1x_i)^2}{2\sigma^2}}$\\
+$\ln L(\beta_0,\beta_1,\sigma^2)=\frac{-n}{2}\ln(2\pi\sigma^2)-\frac{\sum(Y_i-\beta_0-\beta_1x_i)^2}{2\sigma^2}$
+\begin{itemize}
+    \item $
+    \frac{\partial \ln L}{\partial \beta_0} = \frac{1}{\sigma^2} \sum_{i=1}^n (Y_i - \beta_0 - \beta_1 x_i) \Rightarrow \beta_0 = \bar{Y} - \beta_1 \bar{x}$
+
+    \item 
+    $\frac{\partial \ln L}{\partial \beta_1} = \frac{1}{\sigma^2} \sum_{i=1}^n (Y_i - \beta_0 - \beta_1 x_i)x_i \Rightarrow \beta_1 = \frac{\sum_{i=1}^n (x_i - \bar{x})(Y_i - \bar{Y})}{\sum_{i=1}^n (x_i - \bar{x})^2}$
+
+    \item $\frac{\partial \ln L}{\partial \sigma^2} = -\frac{n}{2\sigma^2} + \frac{1}{2\sigma^4} \sum_{i=1}^n (Y_i - \beta_0 - \beta_1 x_i)^2 \Rightarrow \sigma^2 = \frac{1}{n} \sum_{i=1}^n (Y_i - \beta_0 - \beta_1 x_i)^2$
+\end{itemize}
+\subsubsection{Estimators are Random Variables}
+\begin{itemize}
+    \item $\hat{\beta_1}\sim\mathcal{N}(\beta_1,\frac{\sigma^2}{\sum_{i=1}^n(x_i-\overline{x})^2})$
+    \item $\hat{\beta_0}\sim\mathcal{N}(\beta_0,\frac{\sigma^2\sum_{i=1}^nx_i^2}{n\sum_{i=1}^n(x_i-\overline{x})^2})$
+    \item $\overline{Y}$ and $\hat{\beta_1}$ are independent
+\end{itemize}
+\textbf{Proof}
+\begin{enumerate}
+    \item $\hat{\beta_1}$ distribution\\
+    $\hat{\beta_1}=\frac{\sum x_iY_i-n\overline{Y}\overline{x}}{\sum x_i^2-n\overline{x}^2}=\frac{\sum x_iY_i-\overline{x}\sum Y_i}{\sum(x_i-\overline{x})^2}=\frac{\sum(x_i-\overline{x})y_i}{\sum(x_i-\overline{x})^2}$\\
+    $\hat{\beta_1}$ is a linear combination of independent normals so $\hat{\beta_1}$ is normal\\
+    $E[\hat{\beta}_1] = E\left[ \frac{\sum (x_i - \bar{x})(\beta_0 + \beta_1 x_i + \varepsilon_i)}{\sum (x_i - \bar{x})^2} \right]
+= \frac{\sum (x_i - \bar{x})(\beta_0 + \beta_1 x_i)}{\sum (x_i - \bar{x})^2}
++ \frac{\sum (x_i - \bar{x}) E[\varepsilon_i]}{\sum (x_i - \bar{x})^2}=\frac{\beta_0 \sum (x_i - \bar{x}) + \beta_1 \sum (x_i - \bar{x})x_i}{\sum (x_i - \bar{x})^2} + 0
+= \frac{0 + \beta_1 \sum (x_i - \bar{x})x_i}{\sum (x_i - \bar{x})^2}
+= \beta_1$\\
+    $Var(\hat\beta_1)=\text{Var} \left( \frac{\sum (x_i - \bar{x}) \varepsilon_i}{\sum (x_i - \bar{x})^2} \right)
+= \frac{1}{\left( \sum (x_i - \bar{x})^2 \right)^2} \sum (x_i - \bar{x})^2 \cdot \sigma^2
+= \frac{\sigma^2}{\sum (x_i - \bar{x})^2}$
+    \item $\overline{Y}$ is independent of $\hat{\beta_1}$
+    \begin{itemize}
+        \item $Cov(y_i,y_j)=\begin{cases}0&i\neq j\\\sigma^2&i=j\end{cases}$
+        \item If $x_1$,$x_2$ are jointly normal, then if $x_1$,$x_2$ are uncorrelated $\Rightarrow$ $x_1$,$x_2$ are independent
+        \item $(x_1,x_2)$ are jointly normal $\leftrightarrow$ $ax_i+bY_i\sim\mathcal{N}$ for any $a,b$
+        \item $a\overline{Y}_b\hat{\beta_1}=a(\text{linear combination of }Y_i)+b(\text{linear combination of }Y_i)=\text{ linear combination of }Y_i\text{(ind normal)}\Rightarrow (\overline{Y},\hat{\beta_1})$ are jointly normal
+        \item $Cov(\overline{Y},\hat{\beta_1})=Cov(\frac{1}{n}\sum Y_i,\frac{\sum(x_i-\overline{x})Y_i}{\sum(x_i-\overline{x})^2})=\frac{\sum_i\sum_j(x_i-\overline{x})Cov(Y_i,Y_j)}{n\sum(x_i-\overline{x})^2}=\frac{\sum_i(x_i-\overline{x})Var(Y_i)}{n\sum(x_i-\overline{x})^2}=\sigma^2\frac{\sum(x_i-\overline{x})}{n\sum(x_i-\overline{x})^2}=0$
+    \end{itemize}
+    \item $\hat{\beta_0}$ distribution\\
+    Linear combination of independent normals so independent\\
+    $E[\hat{\beta_0}]== E[\bar{Y}] - \bar{x} E[\hat{\beta}_1] = \beta_0 + \beta_1 \bar{x} - \bar{x} \beta_1 = \beta_0$\\
+    $Var(\hat{\beta_0})=\frac{\sigma^2}{n} + \bar{x}^2 \cdot \frac{\sigma^2}{\sum (x_i - \bar{x})^2}
+- 2 \bar{x} \cdot \frac{\sigma^2 \bar{x}}{\sum (x_i - \bar{x})^2}=\frac{\sigma^2}{n} + \frac{\sigma^2 \bar{x}^2}{\sum (x_i - \bar{x})^2}
+- \frac{2 \sigma^2 \bar{x}^2}{\sum (x_i - \bar{x})^2}
+= \frac{\sigma^2\sum x_i^2}{n\sum(x_i-\overline{x})^2}$
+\end{enumerate}
+\subsubsection{Inference for $\hat{\beta_1}$}
+Let $(x_1,Y_1),\dots,(x_n,Y_n)$ be a set of points that satisfy the assumptions of the simple linear model, and let $S^2=\frac{1}{n-2}\sum_{i=1}^n(Y_i-\hat{\beta_0}-\hat{\beta_1}x_i)^2$ then
+\begin{center}
+    $T_{n-2}=\frac{\hat{\beta_1}-\beta_1}{S/\sqrt{\sum_{i=1}^n(x_i-\overline{x})^2}}$
+\end{center}
+has a Student $t$ distribution with $n-2$ degrees of freedom\\
+\textbf{Proof}\\
+$\frac{\hat{\beta_1}-\beta_1}{\frac{S}{\sqrt{\sum(x_i-\overline{x})^2}}}\cdot\frac{\sigma}{\sigma}=\frac{z}{\sqrt{\frac{S^2}{\sigma^2}\cdot\frac{n-2}{n-2}}}=\frac{z}{\sqrt{\frac{\mathcal{X}^2_{n-2}}{n-2}}}\sim T_{n-2}$\\
+$z$ is independent of $\mathcal{X}^2_{n-2}$ since $\hat{\beta_1}$ and $S^2$ are independent\\
+\textbf{Confidence Interval}\\
+$[\hat{\beta_1}\pm t_{\alpha/2,n-2}\cdot\frac{s}{\sqrt{\sum_{i=1}^n(x_i-\overline{x})^2}}]$\\
+\textbf{Hypothesis test}\\
+Test Statistic: $t=\frac{\hat{\beta_1}-\beta_1}{s/\sqrt{\sum_{i=1}^n(x_i-\overline{x})^2}}$\\
+P-Value: $P(t_{n-2}\leq t)$ or $P(t_{n-2}\geq t)$ of $2P(t_{n-2}\leq-\vert t\vert)$
+\subsubsection{Inference for Mean Response}
+Find a confidence interval for the average value of the response variable of all observations with explanatory variable fixed at $x$, ($E(Y)=\beta_0+\beta_1x)$\\
+$\hat{Y}=\hat{\beta_0}+\hat{\beta_1}=\overline{Y}-\hat{\beta_1}\overline{x}+\hat{\beta_1}x=\overline{Y}-\hat{\beta_1}(\overline{x}-x)$ is normal since linear combination of independent normals\\
+$E[\hat{Y}]=E[\hat{\beta_0}]+E[\hat{\beta_1}]x=\beta_0+\beta_1x=E[Y]$\\
+$Var(\hat{Y})=Var(\overline{Y})+Var(\hat{\beta_1})(\overline{x}-x)^2=\frac{\sigma^2}{n}+\frac{\sigma^2(x_i-\overline{x})^2}{\sum(x_i-\overline{x})^2}=\sigma^2[\frac{1}{n}+\frac{(x_i-\overline{x})^2}{\sum(x_i-\overline{x})^2}]$\\
+$\hat{Y}\sim\mathcal{N}(\beta_0+\beta_1x,\sigma^2[\frac{1}{n}+\frac{(x_i-\overline{x})^2}{\sum(x_i-\overline{x})^2}])$\\
+$\frac{\hat{Y}-E[Y]}{S\sqrt{\frac{1}{n}+\frac{(x-\overline{x})^2}{\sum(x_i-\overline{x})^2}}}\cdot\frac{\sigma}{\sigma}=\frac{z}{\sqrt{\frac{S^2}{\sigma^2}\cdot\frac{n-2}{n-2}}}=\frac{z}{\sqrt{\frac{\mathcal{X}^2_{n-2}}{n-2}}}\sim t_{n-2}$\\
+Numerator depends on $\hat{\beta_0},\hat{\beta_1}$ and denominator depends on $S^2$ so independence condition is satisfied\\
+\textbf{Confidence Interval}\\
+$[\hat{y}\pm t_{n-2,\alpha/2}\cdot s\sqrt{\frac{1}{n}+\frac{(x-\overline{x})^2}{\sum_{i=1}^n(x_i-\overline{x})^2}}]$
+\subsubsection{Inference for New Observation}
+Find a prediction interval for the value of the response variable of a new observation with explanatory variable fixed at $x$\\
+$\hat{Y}\sim\mathcal{N}(\beta_0+\beta_1x,\sigma^2[\frac{1}{n}+\frac{(x-\overline{x})^2}{\sum(x_i-\overline{x})^2}])$\\
+$\frac{\hat{y}-y}{s\sqrt{1+\frac{1}{n}+\frac{(x-\overline{x})^2}{\sum(x_i-\overline{x})^2}}}\sim t_{n-2}$\\
+\textbf{Confidence Interval}\\
+$[\hat y\pm t_{\alpha/2,n-2}\cdot s\sqrt{1+\frac{1}{n}+\frac{(x-\overline{x})^2}{\sum(x_i-\overline{x})^2}}]$
+\subsubsection{Variance Decomposition}
+$\sum_{i=1}^n(y_i-\overline{y})^2=\sum_{i=1}^n(y_i-\hat{y})^2+\sum_{i=1}^n(\hat{y}-\overline{y})^2$\\
+\begin{itemize}
+    \item First term is total variation in $y$
+    \item Second term is variation in $y$ that cannot be explained by the linear regression with $x$
+    \item Third term is the variation in $y$ that is explained by the linear regression with $x$
+\end{itemize}
+\subsubsection{Coefficient of determination}
+$R^2=\frac{\sum_{i=1}^n(y_i-\overline{y})^2-\sum_{i=1}^n(y_i-\hat{y})^2}{\sum_{i=1}^n(y_i-\overline{y})^2}=\frac{\sum_{i=1}^n(\hat{y}-\overline{y})^2}{\sum_{i=1}^n(y_i-\overline{y})^2}$
+\begin{itemize}
+    \item $0\leq R^2\leq 1$
+    \item $R^2$ is the proportion of the total variance in the response variable that can be explained by the linear regression with $x$
+    \item $R^2$ is the square of the sample correlation $r$ of $x,y$
+\end{itemize}
+\subsubsection{Assumptions}
+\begin{itemize}
+    \item $Y_i=\beta+0+\beta_1x_i+\epsilon_i$
+    \item $E[\epsilon_i]=0$
+    \item $\epsilon_i$ have a normal distribution
+    \item $\epsilon_i$ are independent
+    \item homoscedasticity: $Var(\epsilon_i)=\sigma^2$ (check residual plot to see equal spread of zeros around 0)
+    \item Errors: $\epsilon = Y_i-\beta_0-\beta_1x_i$ are not observable
+    \item Residuals: $Y_i-\hat{\beta_1}-\hat{\beta_1}x_i$ are observable
+\end{itemize}
+\section{Anova Test}
+\label{sec:anova}
+\end{document}
