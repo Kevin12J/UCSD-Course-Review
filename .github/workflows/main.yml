@@ -13,10 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repository with full history
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0  # Required to compare commits
+
+    - name: Set up Git user
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
 
     - name: Install TeX Live
       run: |
@@ -24,12 +30,9 @@ jobs:
         sudo apt-get install -y texlive-full
 
     - name: Compile changed .tex files
-      id: compile
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        tex_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep '\.tex$' || true)
 
-        tex_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.tex$' || true)
         if [ -z "$tex_files" ]; then
           echo "No .tex files changed."
           exit 0
@@ -58,4 +61,5 @@ jobs:
         else
           echo "No PDFs generated to commit."
         fi
+
 
