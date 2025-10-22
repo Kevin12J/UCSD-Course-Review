@@ -1,67 +1,51 @@
-name: Compile and Commit LaTeX PDFs
+name: Compile LaTeX on Change
 
 on:
   push:
     paths:
-      - '**.tex'
+      - '**.tex'   # Run only when .tex files change
   pull_request:
     paths:
       - '**.tex'
 
 jobs:
-  compile-tex:
+  build-latex:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository with full history
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0  # fetch full history for full commit range
+      # 1. Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Git user
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+      # 2. Set up LaTeX environment
+      - name: Install LaTeX
+        run: sudo apt-get update && sudo apt-get install -y texlive-full
 
-    - name: Install TeX Live
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y texlive-full
+      # 3. Compile all modified .tex files
+      - name: Compile modified .tex files
+        run: |
+          for file in $(git diff --name-only HEAD~1 HEAD | grep '\.tex$'); do
+            echo "Compiling $file..."
+            latexmk -pdf -interaction=nonstopmode -halt-on-error "$file"
+          done
 
-    - name: Compile changed .tex files
-      run: |
-        # Get list of changed .tex files
-        tex_files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep '\.tex$' || true)
+      # 4. (Optional) Upload PDFs as artifacts
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-pdfs
+          path: |
+            **/*.pdf
 
-        if [ -z "$tex_files" ]; then
-          echo "No .tex files changed."
-          exit 0
-        fi
-
-        updated_pdfs=0
-
-        for file in $tex_files; do
-          dir=$(dirname "$file")
-          base=$(basename "$file" .tex)
-
-          echo "Compiling $file"
-          latexmk -pdf -output-directory="$dir" "$file"
-
-          if [ -f "$dir/$base.pdf" ]; then
-            git add "$dir/$base.pdf"
-            updated_pdfs=1
-          fi
-
-          latexmk -c -output-directory="$dir" # optional cleanup
-        done
-
-        if [ "$updated_pdfs" -eq 1 ]; then
-          git commit -m "Auto-compiled PDF(s) from changed .tex"
+      # 5. (Optional) Commit PDFs back to repo
+      - name: Commit compiled PDFs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add **/*.pdf
+          git commit -m "Auto-compile PDFs [skip ci]" || echo "No changes"
           git push
-        else
-          echo "No PDFs generated to commit."
-        fi
+
 
 
 
